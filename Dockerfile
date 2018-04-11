@@ -5,7 +5,7 @@ RUN export TERM=dumb ; \
   && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 \
   && apt-get update && apt-get install -y \
     haproxy=1.5.8-3+deb8u2 \
-    mysql-manager=1.0.1 \
+    mysql-manager=1.1.0 \
     supervisor=3.0r1-1+deb8u1 \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
