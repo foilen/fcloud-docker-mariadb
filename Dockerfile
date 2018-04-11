@@ -1,4 +1,4 @@
-FROM mariadb:10.3.2"
+FROM mariadb:10.3.5
 
 RUN export TERM=dumb ; \
   echo "deb https://dl.bintray.com/foilen/debian stable main" > /etc/apt/sources.list.d/foilen.list \
