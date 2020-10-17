@@ -63,4 +63,11 @@ echo MariaDB - Ready to use
 touch /var/lib/mysql/READY
 touch /var/lib/mysql/CAN_USE
 
+function softQuit {
+  echo MariaDB - Got a SIGTERM signal. Sending mysqladmin shutdown command
+  mysqladmin --defaults-file=/volumes/config/lastPass.cnf -u root -h 127.0.0.1 shutdown
+}
+
+trap softQuit SIGTERM
+
 wait $APP_PID
