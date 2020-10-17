@@ -16,12 +16,12 @@ echo MariaDB - Starting
 /usr/sbin/mysqld &
 APP_PID=$!
 echo MariaDB - Started
+sleep 5
 
 # Change root password if needed
 LAST_PASS=$(cat /volumes/config/lastPass || echo)
 NEW_PASS=$(cat /newPass)
 if [ "$LAST_PASS" != "$NEW_PASS" ]; then
-  sleep 5
   echo MariaDB - Update the password
   
   if [ "$LAST_PASS" == "" ]; then
@@ -51,7 +51,6 @@ fi
 LAST_VERSION=$(cat /volumes/config/lastversion || echo)
 NEW_VERSION=$(mysql --version)
 if [ "$LAST_VERSION" != "$NEW_VERSION" ]; then
-  sleep 5
   echo MariaDB - Upgrade the database
   mysql_upgrade --defaults-file=/volumes/config/lastPass.cnf -u root -h 127.0.0.1
   
@@ -62,6 +61,11 @@ echo MariaDB - Ready to use
 
 touch /var/lib/mysql/READY
 touch /var/lib/mysql/CAN_USE
+
+echo MariaDB - Ensure innodb_fast_shutdown = 0
+mysql --defaults-file=/volumes/config/lastPass.cnf -u root -h 127.0.0.1 << _EOF
+  SET GLOBAL innodb_fast_shutdown = 0;
+_EOF
 
 function softQuit {
   echo MariaDB - Got a SIGTERM signal. Sending mysqladmin shutdown command
