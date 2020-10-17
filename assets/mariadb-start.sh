@@ -55,7 +55,7 @@ if [ "$LAST_VERSION" != "$NEW_VERSION" ]; then
   echo MariaDB - Upgrade the database
   mysql_upgrade --defaults-file=/volumes/config/lastPass.cnf -u root -h 127.0.0.1
   
-  echo $NEW_VERSION > /volumes/config/lastversion
+  echo "$NEW_VERSION" > /volumes/config/lastversion
 fi
 
 echo MariaDB - Ready to use
