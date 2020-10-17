@@ -2,11 +2,7 @@
 
 rm -f /var/lib/mysql/CAN_USE
 
-# Change root password if needed
-LAST_PASS=$(cat /volumes/config/lastPass)
-
 set -e
-NEW_PASS=$(cat /newPass)
 
 # Initializing
 if [ ! -f /var/lib/mysql/READY ]; then
@@ -21,6 +17,9 @@ echo MariaDB - Starting
 APP_PID=$!
 echo MariaDB - Started
 
+# Change root password if needed
+LAST_PASS=$(cat /volumes/config/lastPass)
+NEW_PASS=$(cat /newPass)
 if [ "$LAST_PASS" != "$NEW_PASS" ]; then
   sleep 5
   echo MariaDB - Update the password
@@ -46,6 +45,17 @@ _EOF
   fi
   echo $NEW_PASS > /volumes/config/lastPass
   cp /newPass.cnf /volumes/config/lastPass.cnf
+fi
+
+# Run the upgrade if the version changed
+LAST_VERSION=$(cat /volumes/config/lastversion)
+NEW_VERSION=$(mysql --version)
+if [ "$LAST_VERSION" != "$NEW_VERSION" ]; then
+  sleep 5
+  echo MariaDB - Upgrade the database
+  mysql_upgrade --defaults-file=/volumes/config/lastPass.cnf -u root -h 127.0.0.1
+  
+  echo $NEW_VERSION > /volumes/config/lastversion
 fi
 
 echo MariaDB - Ready to use
