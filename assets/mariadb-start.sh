@@ -18,7 +18,7 @@ APP_PID=$!
 echo MariaDB - Started
 
 # Change root password if needed
-LAST_PASS=$(cat /volumes/config/lastPass)
+LAST_PASS=$(cat /volumes/config/lastPass || echo)
 NEW_PASS=$(cat /newPass)
 if [ "$LAST_PASS" != "$NEW_PASS" ]; then
   sleep 5
@@ -48,7 +48,7 @@ _EOF
 fi
 
 # Run the upgrade if the version changed
-LAST_VERSION=$(cat /volumes/config/lastversion)
+LAST_VERSION=$(cat /volumes/config/lastversion || echo)
 NEW_VERSION=$(mysql --version)
 if [ "$LAST_VERSION" != "$NEW_VERSION" ]; then
   sleep 5
