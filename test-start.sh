@@ -20,6 +20,33 @@ if [ ! -f _data/newPass ]; then
 	echo "password=ABC" >> _data/newPass.cnf
 fi
 
+cat > _data/manager-config.json << _EOF
+{
+	"admin" : {
+		"name" : "root",
+		"password" : "ABC"
+	},
+	"databases" : [
+		"first_db",
+		"second_db"
+	],
+	"usersToIgnore" : [
+		{
+			"name" : "root",
+			"host" : "localhost"
+		},
+		{
+			"name" : "root",
+			"host" : "%"
+		},
+		{
+			"name" : "mariadb.sys",
+			"host" : "localhost"
+		}
+	]
+}
+_EOF
+
 echo ----[ Stop previous and prepare ]----
 DOCKER_INSTANCE_NAME=fcloud-docker-mariadb-test
 
@@ -33,6 +60,7 @@ set -e
 docker create --name $DOCKER_INSTANCE_NAME fcloud-docker-mariadb:test
 docker cp _data/newPass $DOCKER_INSTANCE_NAME:/newPass
 docker cp _data/newPass.cnf $DOCKER_INSTANCE_NAME:/newPass.cnf
+docker cp _data/manager-config.json $DOCKER_INSTANCE_NAME:/manager-config.json
 docker commit $DOCKER_INSTANCE_NAME fcloud-docker-mariadb:test2
 docker rm $DOCKER_INSTANCE_NAME
 
@@ -44,6 +72,10 @@ docker run --detach \
  --user $(id -u) \
  fcloud-docker-mariadb:test2 \
  /mariadb-start.sh
+
+echo ----[ Execute Manager ]----
+sleep 5s
+docker exec -i $DOCKER_INSTANCE_NAME mysql-manager 127.0.0.1:3306 /manager-config.json
 
 echo ----[ Logs ]----
 docker logs -f $DOCKER_INSTANCE_NAME
