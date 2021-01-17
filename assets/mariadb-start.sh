@@ -62,6 +62,15 @@ if [ "$LAST_VERSION" != "$NEW_VERSION" ]; then
   echo "$NEW_VERSION" > /volumes/config/lastversion
 fi
 
+# Fix missing user
+echo MariaDB - Fix missing user
+mysql --defaults-file=/newPass.cnf -u root -h 127.0.0.1 << _EOF
+CREATE USER IF NOT EXISTS \`mariadb.sys\`@\`localhost\`;
+GRANT USAGE ON *.* TO \`mariadb.sys\`@\`localhost\`;
+GRANT SELECT, DELETE ON \`mysql\`.\`global_priv\` TO \`mariadb.sys\`@\`localhost\`;
+FLUSH PRIVILEGES;
+_EOF
+
 # Fully ready
 echo MariaDB - Ready to use
 
