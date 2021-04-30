@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/mariadb?tab=tags
-FROM mariadb:10.5.8
+FROM mariadb:10.5.9
 
 RUN export TERM=dumb ; \
   apt-get update && apt-get install -y \
